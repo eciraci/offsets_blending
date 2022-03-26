@@ -1,3 +1,9 @@
+# osx .DS_Store
+.DS_Store
+data/.DS_Store
+# pycharm settings files
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
