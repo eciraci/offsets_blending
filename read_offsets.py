@@ -20,7 +20,7 @@ def main():
     data_path = pathlib.Path(set_path_to_data_dir())
 
     # - import sample Offset Layer
-    layer_name = 'layer3'
+    layer_name = 'layer2'
     o_layer = OffsetsLayer(data_path.joinpath(layer_name))
 
     # - Show Offsets
@@ -29,8 +29,8 @@ def main():
     # - Compute Outliers Mask
     metric = 'covariance'
     threshold = 10
-    window_az = 100
-    window_rg = 100
+    window_az = 50
+    window_rg = 50
     outliers_mask = o_layer.identify_outliers(metric=metric,
                                               threshold=threshold,
                                               window_az=window_az,
