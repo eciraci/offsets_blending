@@ -1,0 +1,6 @@
+numpy
+scipy
+matplotlib
+pylint
+h5py
+gdal
