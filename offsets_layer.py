@@ -1,4 +1,4 @@
-"""
+u"""
 Enrico Ciraci 03/2022
 Load AMPCOR Offsets Layers
 """
@@ -6,6 +6,8 @@ import os
 import pathlib
 from osgeo import gdal
 from dataclasses import dataclass
+import numpy as np
+from scipy import ndimage
 import matplotlib.pyplot as plt
 from utils.mpl_utils import add_colorbar
 # - change matplotlib default setting
@@ -31,12 +33,14 @@ class OffsetsLayer:
         self.cov_az = None          # - Covariance Azimuth
         self.cov_rg = None          # - Covariance Range
         self.cov_hdr = {}           # - Covariance Header
+        self.shape = None           # - Offsets layer shape
 
         # - Read Offsets file
         ds = gdal.Open(str(os.path.join(d_path, 'dense_offsets')),
                        gdal.GA_ReadOnly)
         self.offsets_az = ds.GetRasterBand(1).ReadAsArray()
         self.offsets_rg = ds.GetRasterBand(2).ReadAsArray()
+        self.shape = self.offsets_rg.shape
         ds = None
         # - Read Dense Offsets header
         with open(os.path.join(d_path, 'dense_offsets.hdr'), 'r',
@@ -86,6 +90,70 @@ class OffsetsLayer:
             for ln in h_line[1:]:
                 s_line = ln.split('=')
                 self.cov_hdr[s_line[0].strip] = s_line[1].strip
+
+    def identify_outliers(self, metric: str = 'snr', threshold: float = 1.,
+                          window_az: int = 50, window_rg: int = 50,
+                          ) -> dict:
+        """
+        Identify outliers in the offset fields.
+        Outliers are identified by thresholding a
+        metric (SNR, offset covariance, offset median
+        absolute deviation) suggested by the user
+        -------
+        :param metric: outlier selection metric - str
+        :param threshold: outlier selection threshold - str
+        :param window_az: azimuth windows search size
+        :param window_rg: range windows search size
+        :return: outlier_mask - dict
+        """
+        if metric == 'snr':
+            # - Open SNR
+            outlier_mask = np.where(self.snr < threshold)
+
+        elif metric == 'median_filter':
+            # - Use offsets to compute "median absolute deviation" (MAD)
+            median_az = ndimage.median_filter(self.offsets_az,
+                                              [window_az, window_rg])
+            median_rg = ndimage.median_filter(self.offsets_rg,
+                                              [window_az, window_rg])
+            outlier_mask \
+                = (np.abs(self.offsets_az - median_az) > threshold) | \
+                  (np.abs(self.offsets_rg - median_rg) > threshold)
+
+        elif metric == 'covariance':
+            # - Use offsets azimuth and range covariance elements
+            outlier_mask = (self.cov_az > threshold) |\
+                           (self.cov_rg > threshold)
+        else:
+            err_str = f'{metric} invalid metric to filter outliers'
+            raise ValueError(err_str)
+
+        # - outlier binary mask
+        binary_mask = np.ones(self.shape)
+        binary_mask[outlier_mask] = 0
+        return{'outlier_mask': outlier_mask, 'binary_mask': binary_mask}
+
+    def mask_outliers(self, mask: np.ndarray) -> None:
+        """
+        Apply binary mask to Layer fields:
+        - mask = 1 -> Valid data Points
+        - mask = 0 -> Non Valid data point - set to NaN
+        :param mask: binary mask - np.ndarray
+        :return: None
+        """
+        if mask.shape != self.shape:
+            raise ValueError(f'operands could not be broadcast '
+                             f'together with shapes ({mask.shape}) '
+                             f'({self.shape})')
+        else:
+            ind_bin = np.where(mask != 1)
+            self.offsets_az[ind_bin] = np.nan    # - Dense Offsets Azimuth
+            self.offsets_rg[ind_bin] = np.nan    # - Dense Offsets Range
+            self.g_offsets_az[ind_bin] = np.nan  # - Gross Offsets Azimuth
+            self.g_offsets_rg[ind_bin] = np.nan  # - Gross Offsets Range
+            self.snr[ind_bin] = np.nan           # - Gross Offsets Range
+            self.cov_az[ind_bin] = np.nan        # - Covariance Azimuth Azimuth
+            self.cov_rg[ind_bin] = np.nan        # - Covariance Azimuth Range
 
     def show_offsets(self, fig_size: tuple = (10, 6),
                      offsets_range: tuple = (-20, 20),
