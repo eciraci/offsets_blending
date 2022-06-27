@@ -1,6 +1,6 @@
 u"""
 Enrico Ciraci 03/2022
-Load AMPCOR Offsets Layers
+OffsetsLayer - Utility class to load AMPCOR Offsets Layers.
 """
 import os
 import pathlib
@@ -17,7 +17,43 @@ plt.style.use('seaborn-deep')
 
 
 class OffsetsLayer:
-    """Load AMPCOR Offsets Layers"""
+    """Load AMPCOR Offsets Layers
+    ...
+
+    Parameters
+    ----------
+    :param d_path - pathlib.Path - absolute path ti the directory containing the
+        selected offset layer.
+
+    Attributes
+    ----------
+    path = d_path          # - Absolute Path to Offsets Layer
+    offsets_az = None      # - Dense Offsets Azimuth
+    offsets_rg = None      # - Dense Offsets Range
+    offsets_hdr = {}       # - Dense Offsets Metadate
+    g_offsets_az = None    # - Gross Offsets Azimuth
+    g_offsets_rg = None    # - Gross Offsets Range
+    g_offset_hdr = {}      # - Gross Offsets Metadata
+    snr = None             # - SNR
+    snr_hdr = {}           # - SNR Header
+    cov_az = None          # - Covariance Azimuth
+    cov_rg = None          # - Covariance Range
+    cov_hdr = {}           # - Covariance Header
+    shape = None           # - Offsets layer shape
+
+    Methods
+    -------
+
+    identify_outliers - Identify outliers inf the selected offset fields.
+    mask_outliers - Apply binary mask to Layer fields.
+    show_offsets - Show layer dense offsets and their covariance.
+    plot_offsets_distribution - Show dense offsets probability distribution.
+
+    Raises ValueError
+        Raised if offsets layers dimensions do not match,
+        Raised if invalid metric to filter outliers is selected.
+
+    """
     def __init__(self, d_path: pathlib.Path):
         # - class attributes
         self._path = d_path          # - Absolute Path to Offsets Layer
@@ -34,7 +70,7 @@ class OffsetsLayer:
         self._cov_hdr = {}           # - Covariance Header
         self._shape = None           # - Offsets layer shape
 
-        # - Read Offsets file
+        # - Read Dense Offsets file
         ds = gdal.Open(str(os.path.join(d_path, 'dense_offsets')),
                        gdal.GA_ReadOnly)
         self._offsets_az = ds.GetRasterBand(1).ReadAsArray()
@@ -82,6 +118,7 @@ class OffsetsLayer:
         self._cov_az = ds.GetRasterBand(1).ReadAsArray()
         self._cov_rg = ds.GetRasterBand(2).ReadAsArray()
         ds = None
+
         # - Read SNR header
         with open(os.path.join(d_path, 'covariance.hdr'), 'r',
                   encoding='utf8') as h_fid:
@@ -189,10 +226,12 @@ class OffsetsLayer:
                           window_az: int = 50, window_rg: int = 50,
                           ) -> dict:
         """
-        Identify outliers in the offset fields.
-        Outliers are identified by thresholding a
-        metric (SNR, offset covariance, offset median
-        absolute deviation) suggested by the user
+        Identify outliers inf the selected offset fields.
+        Outliers are identified by employing a user defined metric:
+        1. SNR,
+        2. offset covariance,
+        3. offset median,
+        4. absolute deviation
         -------
         :param metric: outlier selection metric - str
         :param threshold: outlier selection threshold - str
@@ -304,11 +343,11 @@ class OffsetsLayer:
                                   n_bins: int = 41,
                                   density: bool = True) -> None:
         """
-        Plot Histograms showing Offsets value distribution.
+        Plot Histograms showing Offsets value distribution
         :param fig_size: figure size
         :param offsets_range: histogram x-axis limits
         :param n_bins: histogram number of bins
-        :param density: If True, draw and return offstets probability density
+        :param density: If True, draw and return offsets probability density
         :return: None
         """
         # - Show Grid Search Error Array
