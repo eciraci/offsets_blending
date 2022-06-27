@@ -4,6 +4,10 @@ data/.DS_Store
 # pycharm settings files
 .idea/
 
+# project data directory and data files
+offset_layers/
+*.hdr
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

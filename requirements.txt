@@ -4,3 +4,4 @@ matplotlib
 pylint
 h5py
 gdal
+pyyaml

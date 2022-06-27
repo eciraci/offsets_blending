@@ -1,0 +1,17 @@
+name: offsets_blending
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - numpy
+  - scipy
+  - matplotlib
+  - gdal
+  - netCDF4
+  - pyproj
+  - pyyaml
+  - scipy
+  - flake8
+  - pytest
+  - pydantic
+  - pytest-cov
