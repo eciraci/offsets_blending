@@ -1,6 +1,14 @@
+#!/usr/bin/python
+"""
+Enrico Ciraci 06/2022
+Test - Preliminary Test integration with Pytest
+
+UPDATE HISTORY:
+
+"""
+
 import numpy as np
 import pathlib
-import pytest
 from pytest import MonkeyPatch
 from offsets_layer import OffsetsLayer
 from merge_offsets_layers import fill_outliers_holes
