@@ -150,7 +150,8 @@ def main():
     layer_2 = OffsetsLayer(data_path.joinpath('layer2'))
     layer_3 = OffsetsLayer(data_path.joinpath('layer3'))
     # - Show Offsets after Outlier Removal
-    layer_1.show_offsets(cov_range=(0, 1), offsets_range=(-20, 20))
+    layer_1.show_offsets(cov_range=(0, 1), offsets_range=(-20, 20),
+                         title='Layer 1 - High Resolution Offsets')
 
     # - Outlier determination parameters
     outlier_param = {'metric': metric, 'threshold': threshold,
@@ -176,7 +177,7 @@ def main():
     plt.show()
     plt.close()
 
-    # - Show Offsets after Outlier Removal
+    # - Show Offsets after Outlier Removal + Filling
     filled_layer.show_offsets(cov_range=(0, 1), offsets_range=(-20, 20))
 
 
