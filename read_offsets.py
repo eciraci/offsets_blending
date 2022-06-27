@@ -42,7 +42,7 @@ def main() -> None:
     )
     # - Positional Arguments
     parser.add_argument('parameters', type=str,
-                        help='Processing Parameters File [yml - format].')
+                        help='Processing Parameters File [yaml - format].')
     args = parser.parse_args()
 
     if not os.path.isfile(args.parameters):
