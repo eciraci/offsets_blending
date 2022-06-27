@@ -294,6 +294,7 @@ class OffsetsLayer:
     def show_offsets(self, fig_size: tuple = (10, 6),
                      offsets_range: tuple = (-20, 20),
                      cov_range: tuple = (0, 50),
+                     title: str = '',
                      off_cmap: plt.cm = plt.get_cmap('RdBu'),
                      cov_cmap: plt.cm = plt.get_cmap('Reds')) -> None:
         """
@@ -301,12 +302,14 @@ class OffsetsLayer:
         :param fig_size: figure size - tuple
         :param offsets_range: offsets (min, max) values - tuple
         :param cov_range: covariance (min, max) values - tuple
+        :param title: figure sup-title
         :param off_cmap: offsets colormap
         :param cov_cmap: covariance colormap
         :return: None
         """
         # - Show Grid Search Error Array
         fig = plt.figure(figsize=fig_size)
+        plt.suptitle(title, weight='bold', size=16)
         # - Dense Offsets Azimuth
         ax_1 = fig.add_subplot(221)
         ax_1.set_title('Offsets Azimuth', loc='left', weight='bold')
