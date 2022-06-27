@@ -93,7 +93,6 @@ def fill_outliers_holes(hr_offsets: OffsetsLayer,
                 = ir_offsets.g_offsets_rg[outliers_mask]
             hr_offsets.g_offsets_az[outliers_mask]\
                 = ir_offsets.g_offsets_az[outliers_mask]
-
         # - Keep the Input layer original values fo all the other attributes.
     else:
         # - Compute Weighted Average of Intermediate and Low-Resolution Layers
