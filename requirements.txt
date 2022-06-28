@@ -5,3 +5,5 @@ pylint
 h5py
 gdal
 pyyaml
+pytest
+pydantic

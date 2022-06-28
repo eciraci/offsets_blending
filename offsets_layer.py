@@ -54,7 +54,7 @@ class OffsetsLayer:
         Raised if invalid metric to filter outliers is selected.
 
     """
-    def __init__(self, d_path: pathlib.Path):
+    def __init__(self, d_path: pathlib.Path) -> None:
         # - class attributes
         self._path = d_path          # - Absolute Path to Offsets Layer
         self._offsets_az = None      # - Dense Offsets Azimuth

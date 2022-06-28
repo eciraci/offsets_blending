@@ -1,6 +1,9 @@
     #  Processing Parameters
-    layer_name: layer1    # - Selected Offsets layer
+    layer_name: layer1        # - Selected Offsets layer
     metric:  median_filter    # - Outlier selection method
     threshold: 10             # - Outlier selection threshold
     window_az: 51             # - Outlier selection window size - Azimuth
     window_rg: 51             # - Outlier selection window size - Range
+    fill_strategy: median     # - Outlier Elimination Strategy
+    kernel_size_az: 21        # - median filter kernel size - Azimuth
+    kernel_size_rg: 21        # - median filter kernel size - Range
